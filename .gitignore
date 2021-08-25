@@ -1,3 +1,6 @@
 # Ignore for obisidian
 .obsidian
 .trash
+
+# Ignore all executables inside this repo
+*.exe
