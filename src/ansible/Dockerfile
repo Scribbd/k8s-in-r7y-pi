@@ -14,7 +14,8 @@ FROM alpine:${ALPINE_VERSION}
 
 ENV ANSIBLE_PIPELINING=True \
     ANSIBLE_GATHERING=smart \
-    ANSIBLE_RETRY_FILES_ENABLED=False
+    ANSIBLE_RETRY_FILES_ENABLED=False \
+    DEFAULT_ROLES_PATH=\ansible\roles
 
 # Install all
 RUN apk --no-cache add \
