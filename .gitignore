@@ -2,5 +2,8 @@
 .obsidian
 .trash
 
+# Ignore git inside git repos
+src/ansible/awx/awx
+
 # Ignore all executables inside this repo
 *.exe

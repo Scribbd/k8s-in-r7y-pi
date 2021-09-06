@@ -16,13 +16,9 @@ kanban-plugin: basic
 - [ ] [[Ansible]] and learning it
 
 
-## Document
-
-
-
 ## Done
 
 **Complete**
-- [x] [[Configuring the nodes automagicaly]] 
+- [x] [[Configuring the nodes automagicaly]]
 
 

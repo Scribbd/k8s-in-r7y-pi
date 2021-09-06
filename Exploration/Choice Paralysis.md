@@ -14,4 +14,12 @@ As my cluster is growing in size. I am starting to feel the annoyance of logging
 
 However, for this, somehow, it didn't paralyze me. I chose [[Ansible]] rather quickly.
 
+## Distributed File System
+There are some good file systems out there specifically created to run in a cluster environment. Some are block-based, others are object-based. My exploration in that can be found in [[Distributed FS]].
+
 # Choice Paralysis resolved(?)
+For Kubernetes I will use: [[K3s]]
+
+For Automation I will use: [[Ansible]]
+
+For DFS I will use: [[Longhorn]]

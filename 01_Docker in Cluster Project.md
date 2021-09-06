@@ -18,7 +18,10 @@ I was advised to just go with Docker Swarm as it is much easier to setup and mai
 	- Todo when I get more RPI's for the cluster:
 		- HA Control Plane
 - Get a grip on [[security within the cluster]]
-- Get 
+- Get a grip on [[Ansible]]
+
+## Exploration
+Like always, I started with [[Choice Paralysis]].
 
 ## Available hardware
 - 2 x Raspberry Pi 4 8GB
