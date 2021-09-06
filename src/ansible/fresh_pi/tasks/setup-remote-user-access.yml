@@ -1,0 +1,31 @@
+---
+- name: Check inputs
+  debug:
+    msg: "Username: {{ new_username }} Key: {{ new_key }}"
+  when: ansible_check_mode
+
+- name: Add user for remote access
+  user:
+    name: "{{ new_username }}"
+    password: "!"
+    state: present
+    shell: /bin/bash
+    append: true
+    create_home: true
+  register: controller_user
+
+- name: Add authorized key for user
+  authorized_key:
+    user: "{{ new_username }}"
+    state: present
+    exclusive: true
+    key: "{{ new_key }}"
+  when: not ansible_check_mode
+
+- name: Add created user to sudo group (for their rights)
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "^{{ new_username }}"
+    line: "{{ new_username }} ALL=(ALL) NOPASSWD: ALL"
+    state: present
+    validate: 'visudo -cf %s'

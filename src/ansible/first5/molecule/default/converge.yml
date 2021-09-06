@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include first5"
+      include_role:
+        name: "first5"
+
+- import_playbook: ../../playbook.yml
+  vars:
+    ansible_ssh_port: 22

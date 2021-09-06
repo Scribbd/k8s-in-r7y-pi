@@ -1,0 +1,13 @@
+[master_nodes]
+pi1.cluster.lan ansible_host=192.168.178.150
+
+[worker_nodes]
+pi2.cluster.lan ansible_host=192.168.178.160
+pi3.cluster.lan ansible_host=192.168.178.161
+
+[cluster:children]
+master_nodes
+worker_nodes
+
+[cluster:vars]
+ansible_python_interpreter=/usr/bin/python3

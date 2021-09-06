@@ -1,0 +1,67 @@
+---
+# This playbook is split off from first5 as these will setup Pi specific configurations and setup SSH
+# Sets up new users with keys. Assumes this playbook is run inside a container build from this [Dockerfile](../Dockerfile)
+- hosts: all
+  become: true
+  remote_user: pi
+
+  vars:
+    new_ssh_port: 6694
+    new_ansible_username: ansible-controller
+    ansible_key_path: /root/.ssh/id_rsa.pub
+    new_remote_username: manual-worker
+    remote_key_path: /root/.ssh/manual-worker.pub
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted
+
+  tasks:
+    - name: Disable wireless stuff as it isn't needed in this cluster
+      lineinfile:
+        dest: /boot/config.txt
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      with_items:
+        - regexp: "^dtoverlay=disable-wifi"
+          line: "dtoverlay=disable-wifi"
+        - regexp: "^dtoverlay=disable-bt"
+          line: "dtoverlay=disable-bt"
+
+    - name: Ensure safe login settings are enambeld on SSH
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: 'sshd -T -f %s'
+      with_items:
+        - regexp: "^PasswordAuthentication"
+          line: "PasswordAuthentication no"
+        - regexp: "^PermitRootLogin"
+          line: "PermitRootLogin no"
+        - regexp: "^Port"
+          line: "Port {{ new_ssh_port }}"
+        - regexp: "^PubkeyAuthentication"
+          line: "PubkeyAuthentication yes"
+      notify: restart ssh
+
+    - name: Setup ansible access
+      include_tasks: tasks/setup-remote-user-access.yml
+      vars:
+        new_username: "{{ new_ansible_username }}"
+        new_key: "{{ lookup('file', ansible_key_path) }}"
+
+    - name: Setup remote manual access
+      include_tasks: tasks/setup-remote-user-access.yml
+      vars:
+        new_username: "{{ new_remote_username }}"
+        new_key: "{{ lookup('file', remote_key_path) }}"
+
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted

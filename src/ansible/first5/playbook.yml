@@ -1,0 +1,20 @@
+---
+# Playbook for the first 5 minutes of a Pi's life on the internet.
+- hosts: all
+  become: true
+
+  tasks:
+    - name: remove defualt pi user
+      user:
+        name: pi
+        state: absent
+        remove: true
+
+    - name: Setup hostname
+      include_tasks: tasks/setup-hostname.yml
+
+    - name: Install auto-updates
+      include_tasks: tasks/auto-updates.yml
+
+    - name: Install fail2ban
+      include_tasks: tasks/fail2ban.yml

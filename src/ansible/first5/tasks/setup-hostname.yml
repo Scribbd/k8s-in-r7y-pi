@@ -1,0 +1,5 @@
+---
+- name: Set hostname of cluster
+  hostname:
+    name: "{{ inventory_hostname }}"
+    use: debian
