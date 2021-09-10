@@ -20,7 +20,7 @@ Minikube looked like a very promising starter. Yet, I found nothing about settin
 Link: [Minikube home](https://minikube.sigs.k8s.io/docs/)
 
 ## K3s
-Rancher's minified K8s. Boasts to be a <40 Mb install that is optimized for ARM processors. It has some included automagic like Traefic for ingress traffic, and built in loadbalancers. Is it K8s? No, but it is certified to be compatible. So kubectl and all programs that run for/on it should be 
+Rancher's minified K8s. Boasts to be a <40 Mb install that is optimized for ARM processors. It has some included automagic like Traefic for ingress traffic, and built in loadbalancers. Is it K8s? No, but it is certified to be compatible. So kubectl and all programs that run for/on it should just run without trouble.
 
 It also has easier support for [[Longhorn]], my chosen [[Distributed FS]].
 
@@ -44,10 +44,8 @@ Jeff Geerling mentioned this flavor of k8s through one of his tutorials. This fl
 
 It has a 1GB master node requirement which is the minimum. This means that it should be feasible to run this.
 
-
 Link: [K0s home](https://k0sproject.io/)
 Docs: [K0s docs](https://docs.k0sproject.io/v1.22.1+k0s.0/)
-
 
 ## Choice 
 

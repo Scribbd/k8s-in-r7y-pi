@@ -6,20 +6,20 @@ Ansible playbooks created:
  - First5: first five minutes of setting up a linux box
     - Heavily inspired by [Jeff Geerlings security-role](https://github.com/geerlingguy/ansible-role-security)
     - Important: removes user 'pi'
- - prehorn: sets up an usb sata-ssd peripheral with UASP, and prepares file system for use with longhorn
- - qubers: Installs k8s on all nodes
+ - prehorn: sets up an usb sata-ssd peripheral with UASP, and prepares file system for use with longhorn. When possible it will also apply TRIM support.
+ - k8s_install: Installs k8s on all nodes
  - longhorn: installs longhorn to use with k8s
 
 I also created a custom docker container. This is its Dockerfile:
 ![[ansible/Dockerfile]]
 
 Use it with the following command:
-`docker run -itd -v ansible_keys:/root/.ssh -v /var/run/docker.sock:/var/run/docker.sock -v E:\OneDrive\Documenten\ObsidianVaults\DockerCluster\src\ansible:/ansible --name ansible --rm ansible`
+`docker run -itd -v ansible_root:/root/ -v /var/run/docker.sock:/var/run/docker.sock -v E:\OneDrive\Documenten\ObsidianVaults\DockerCluster\src\ansible:/ansible --name ansible --rm ansible`
 
 The 'exploded' more readable command:
 ```bash
 docker run -itd \
--v ansible_keys:/root/.ssh \
+-v ansible_root:/root/ \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v E:\OneDrive\Documenten\ObsidianVaults\DockerCluster\src\ansible:/ansible \
 --name ansible \

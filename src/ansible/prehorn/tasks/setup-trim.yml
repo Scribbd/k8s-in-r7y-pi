@@ -1,0 +1,74 @@
+---
+- name: Install packages needed to enable trim on external drives
+  package:
+    name:
+      - sg3-utils
+      - lsscsi
+    state: present
+
+- name: Check if drive supports Trim
+  command:
+    cmd: "sg_vpd -p lbpv {{ device }}"
+  register: trim_possible
+  changed_when: false
+
+- name: Enable trim when supported
+  when: '"Unmap command supported (LBPU): 1" in trim_possible.stdout'
+  block:
+    - name: Gather device facts for setting up trimming (1/3)
+      command:
+        cmd: "sg_vpd -p bl {{ device }}"
+      register: device_info
+      changed_when: false
+
+    - name: Gather device facts for setting up trimming (2/3)
+      command:
+        cmd: "sg_readcap -l {{ device }}"
+      register: device_block_info
+      changed_when: false
+
+    - name: Gather device facts for setting up trimming (3/3)
+      command:
+        cmd: lsusb
+      register: device_vendor_info
+      changed_when: false
+
+    - name: Set facts for later use
+      set_fact:
+        lba_count: "{{ device_info.stdout | regex_search( lba_regex, '\\1', multiline=True ) | first }}"
+        block_size: "{{ device_block_info.stdout | regex_search( block_regex , '\\1', multiline=True ) | first }}"
+        id_vendor: "{{ device_vendor_info.stdout | regex_search( id_regex, '\\1', multiline=True ) | first }}"
+        id_product: "{{ device_vendor_info.stdout | regex_search( id_regex, '\\2', multiline=True ) | first }}"
+      vars:
+        lba_regex: 'Maximum unmap LBA count: ([0-9]*)'
+        block_regex: 'Logical block length=([0-9]*) bytes'
+        id_regex: 'Bus [0-9]{3} Device [0-9]{3}: ID ([A-Za-z0-9]{4}):([A-Za-z0-9]{4}) ASMedia Technology Inc. ASM1153 SATA 3Gb\/s bridge'
+
+    - name: Checking on TRIM status
+      shell:
+        cmd: find /sys/ -name provisioning_mode -exec grep -H . {} + | sort
+      register: trim_status
+      changed_when: false
+
+    - name: Setup TRIM status when not set
+      when: '"full" in trim_status.stdout'
+      shell: echo unmap > {{ status_regex }}
+      vars:
+        status_regex: "{{ trim_status.stdout | regex_search( '(.*):full' , '\\1', multiline=True ) | first }}"
+
+    - name: set right discard_max_bytes on device
+      shell: echo {{ (lba_count | int) * (block_size | int) }} > /sys/block/{{ drive }}/queue/discard_max_bytes
+
+    - name: Making the trim stick on reboot
+      template:
+        src: templates/10-trim.rules.j2
+        dest: /etc/udev/rules.d/10-trim.rules
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Finally setup fstrim.timer
+      service:
+        name: fstrim.timer
+        state: started
+        enabled: true

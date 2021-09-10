@@ -11,4 +11,4 @@ However, my cluster at it's current size is limited. I got 2 8GB pi4's and an ol
 3.   An **external datastore** / or embedded etcd (as opposed to the embedded SQLite datastore used in single-server setups)
 4.  A **fixed registration address** that is placed in front of the server nodes to allow agent nodes to register with the cluster
 
-I can comply with point 2, 3, and 4. But I can't with 1. It would leave 
+I can comply with point 2, 3, and 4. But I can't with 1. It would leave too little space for tasks on the already constrained pi nodes.

@@ -1,0 +1,50 @@
+---
+# Sets up the dedicated drive for longhorn
+- hosts: worker_nodes
+  become: true
+  vars:
+    drive: sda
+    fs_type: ext4
+    longhorn_path: /var/lib/longhorn
+
+  tasks:
+    - name: Check if sda is already configured
+      command:
+        cmd: lsblk
+      register: lsblk_check
+      changed_when: false
+
+    - name: Create table and partition when no partition is present
+      community.general.parted:
+        device: "/dev/{{ drive }}"
+        label: gpt
+        name: "{{ inventory_hostname }}-longhorn"
+        number: 1
+        state: present
+      when: "longhorn_path not in lsblk_check.stdout"
+
+    - name: Format partition when no fs is present
+      community.general.filesystem:
+        dev: "/dev/{{ drive }}"
+        fstype: "{{ fs_type }}"
+        state: present
+
+    - name: Setup fstab to mount drive on reboot
+      ansible.posix.mount:
+        state: mounted
+        src: "/dev/{{ drive }}"
+        fstype: ext4
+        path: "{{ longhorn_path }}"
+
+    - name: Check if Trim is already enabled
+      command:
+        cmd: "fstrim -v {{ longhorn_path }}"
+      register: fstrim
+      changed_when: false
+      failed_when: false
+
+    - name: setup Trim
+      include_tasks: ./tasks/setup-trim.yml
+      vars:
+        device: "/dev/{{ drive }}"
+      when: '"the discard operation is not supported" in fstrim.stderr'
