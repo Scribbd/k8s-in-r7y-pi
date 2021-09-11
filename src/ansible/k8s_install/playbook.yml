@@ -1,0 +1,47 @@
+---
+# Inspired by https://github.com/k3s-io/k3s-ansible
+# Install K3s by Rancher onto all nodes
+- hosts: cluster
+  become: true
+  handlers:
+    - name: reboot
+      reboot:
+
+  tasks:
+    - name: Pre-requisits - Enable IPv4/6 forwarding
+      sysctl:
+        name: "{{ item }}"
+        value: "1"
+        state: present
+        reload: true
+      with_items:
+        - net.ipv4.ip_forward
+        - net.ipv6.conf.all.forwarding
+
+    - name: Download - k3s for arm64
+      get_url:
+        url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64
+        checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-arm64.txt
+        dest: /usr/local/bin/k3s
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Configure Raspbian with some tweaks
+      include_tasks: tasks/raspbian-optimisations.yml
+
+# Configure master nodes to form a control plane
+- hosts: master_nodes
+  become: true
+
+  tasks:
+    - name: Configure master nodes
+      include_tasks: tasks/k3s-master.yml
+
+# Configure worker nodes to join master in cluster
+- hosts: worker_nodes
+  become: true
+
+  tasks:
+    - name: Configure worker nodes
+      include_tasks: tasks/k3s-node.yml
