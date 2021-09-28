@@ -1,6 +1,6 @@
 ---
 # Sets up the dedicated drive for longhorn
-- hosts: worker_nodes
+- hosts: cluster
   become: true
   vars:
     drive: sda
@@ -8,6 +8,19 @@
     longhorn_path: /var/lib/longhorn
 
   tasks:
+    - name: Install packages Longhorn relies upon. (NFSv4 and Open-ICSCI)
+      package:
+        name:
+          - open-iscsi
+          - nfs-common
+          - bash
+          - curl
+          - grep
+          - mawk
+          - libblkid1
+          - util-linux
+        state: present
+
     - name: Check if sda is already configured
       command:
         cmd: lsblk

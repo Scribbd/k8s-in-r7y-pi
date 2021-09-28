@@ -14,3 +14,7 @@ Be careful, you will be loading a random script in your system.
 Of course, I wan't to do it a bit differently. With Ansible: [[Playbooks#K8s-install]].
 
 ## Configuration
+
+
+
+[[Getting to the services]]

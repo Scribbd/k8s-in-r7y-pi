@@ -1,0 +1,30 @@
+---
+
+# - name: Fresh_Pi playbook
+#   import_playbook: ./fresh_pi/playbook.yml
+#   vars:
+#     ansible_user: pi
+#     ansible_port: 22
+#     ansible_password: raspberry
+#   ignore_unreachable: true
+#   ignore_errors: true
+
+# - hosts: all
+#   vars:
+#     ansible_user: ansible_controller
+#     ansible_port: 6694
+
+#   tasks:
+#     - name: Clear facts of current systems
+#       meta: clear_facts
+#     - name: Reset connection to switch to ansible-controller
+#       meta: reset_connection
+
+- name: First5 playbook
+  import_playbook: ./first5/playbook.yml
+
+- name: Install K8s playbook
+  import_playbook: ./k8s_install/playbook.yml
+
+- name: Install Kube services
+  import_playbook: ./k8s_services/playbook.yml

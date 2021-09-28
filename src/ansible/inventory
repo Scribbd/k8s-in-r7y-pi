@@ -1,9 +1,10 @@
 [master_nodes]
-pi1.cluster.lan ansible_host=192.168.178.150
+pi2.cluster.lan ansible_host=192.168.178.160
 
 [worker_nodes]
-pi2.cluster.lan ansible_host=192.168.178.160
+pi1.cluster.lan ansible_host=192.168.178.150
 pi3.cluster.lan ansible_host=192.168.178.161
+pi4.cluster.lan ansible_host=192.168.178.162
 
 [cluster:children]
 master_nodes
@@ -11,3 +12,5 @@ worker_nodes
 
 [cluster:vars]
 ansible_python_interpreter=/usr/bin/python3
+master_ip=192.168.178.160
+k3s_version=v1.21.4+k3s1

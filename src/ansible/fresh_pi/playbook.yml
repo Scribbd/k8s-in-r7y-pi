@@ -1,7 +1,8 @@
 ---
 # This playbook is split off from first5 as these will setup Pi specific configurations and setup SSH
 # Sets up new users with keys. Assumes this playbook is run inside a container build from this [Dockerfile](../Dockerfile)
-- hosts: all
+- hosts: cluster
+  gather_facts: false
   become: true
   remote_user: pi
 

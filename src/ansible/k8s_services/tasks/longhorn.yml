@@ -1,0 +1,37 @@
+---
+- name: Create Longhorn namespace
+  k8s:
+    state: present
+    kind: namespace
+    name: longhorn-system
+
+- name: Get longhorn deploy .yml from exertnal source
+  get_url:
+    url: "https://raw.githubusercontent.com/longhorn/longhorn/{{ longhorn_version }}/deploy/longhorn.yaml"
+    dest: ~/longhorn.yml
+
+- name: Install longhorn on the cluster
+  k8s:
+    state: present
+    api_version: v1
+    namespace: longhorn-system
+    src: ~/longhorn.yml
+
+- name: Make dashboard accesible
+  k8s:
+    state: present
+    definition:
+      apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: longhorn-ingress
+        namespace: longhorn-system
+      spec:
+        entryPoints:
+          - websecure
+        routes:
+          - match: Host("longhorn-dash.{{ cluster_app_postfix }}")
+            kind: Rule
+            services:
+              - name: longhorn-frontend
+                port: 80

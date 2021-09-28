@@ -32,6 +32,8 @@ worker_nodes
 
 [cluster:vars]
 ansible_python_interpreter=/usr/bin/python3
+master_ip=192.168.178.150
+k3s_version=v1.21.4+k3s1
 ```
 
 ## fresh_pi
@@ -71,8 +73,27 @@ Summary of tasks:
 Installs K3s on the nodes. This playbook is mostly stolen/inspired from [rancher's ansible playbook](https://github.com/k3s-io/k3s-ansible). The original playbook will install k3s in a smarter and distro-agnostic way. I just de-roled it, and just grabbed the tasks that applies to my cluster hardware. This to get more a grasp on what the playbook does.
 
 Summary of tasks:
+ - Setup some Raspian specific configurations
+ - Sets up the master node with access keys and retrieves node token
+ - Sets up worker nodes with node token
 
+## K8s_services
+This playbook is for installing several services on the cluster. Services to be added are:
+ - Kubernetes Dashboard
+	 - Provides a way to manage the K8s cluster through a web console
+ - Longhorn
+	 - Persistent distributed storage
+ - Ansible AWX
+	 - Ansible Tower, but the community kind. It will make it possible to automate the K3s cluster from the inside
 
-## Longhorn
+Longhorn is a solution for Persistent Volume Storage that runs on and for Kubernetes.
+
+> From here on out k8s will be used in ansible. Note to myself, here is a link to the docs on it: https://docs.ansible.com/ansible/latest/collections/kubernetes/core/index.html#plugins-in-kubernetes-core
 
 Summary of tasks:
+ - Installing dependencies needed by Longhorn. Of note:
+   - open-scsi
+   - nfsv4
+ - Installing Longhorn through kubectl
+ - Installing Kubernetes Dashboard through kubectl
+ - Installing Ansible AWX through AWX operator

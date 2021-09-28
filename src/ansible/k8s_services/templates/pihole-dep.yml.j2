@@ -1,0 +1,27 @@
+# Deployment of pihole on my cluster
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pihole
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pihole-volumeclaim
+  namespace: pihole
+spec:
+  storageClassName: longhorn
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+apiVersion: v1
+kind: Pod

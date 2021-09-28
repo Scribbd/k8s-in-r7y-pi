@@ -44,7 +44,7 @@ RUN apk --no-cache add \
         build-base && \
     pip3 install --upgrade pip wheel && \
     pip3 install --upgrade cryptography cffi && \
-    pip3 install mitogen molecule molecule-docker ansible-lint yamllint jmespath docker docker-compose && \
+    pip3 install mitogen molecule molecule-docker ansible-lint yamllint jmespath docker docker-compose openshift && \
     pip3 install --no-cache-dir --no-binary pyyaml ansible==${ANSIBLE_VERSION} && \
     pip3 install --upgrade pywinrm && \
     apk del build-dependencies && \
@@ -52,6 +52,7 @@ RUN apk --no-cache add \
     rm -rf /root/.cache/pip && \
     rm -rf /root/.cargo
 
+# Install minikube
 RUN apk --no-cache add libc6-compat && \
     curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
     install minikube-linux-amd64 /usr/bin/minikube

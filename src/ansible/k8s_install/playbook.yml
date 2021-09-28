@@ -45,3 +45,14 @@
   tasks:
     - name: Configure worker nodes
       include_tasks: tasks/k3s-node.yml
+
+# Get config file
+- hosts: master_nodes
+  become: true
+
+  tasks:
+    - name: Copy remote config-file to localhost for kubectl
+      fetch:
+        src: /home/ansible-controller/.kube/config
+        dest: ~/.kube/config
+      when: ansible_host in master_ip

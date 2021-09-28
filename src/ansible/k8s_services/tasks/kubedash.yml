@@ -1,0 +1,58 @@
+---
+- name: Get K8s dashboard
+  get_url:
+    url: "https://raw.githubusercontent.com/kubernetes/dashboard/{{ kubedash_version }}/aio/deploy/recommended.yaml"
+    dest: ~/kubedash.yml
+
+- name: Deploy K8s dashboard
+  k8s:
+    state: present
+    api_version: v1
+    namespace: kubernetes-dashboard
+    src: ~/kubedash.yml
+
+- name: Deploy admin user
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: admin-user
+        namespace: kubernetes-dashboard
+
+- name: Deploy admin user role
+  k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: admin-user
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+        - kind: ServiceAccount
+          name: admin-user
+          namespace: kubernetes-dashboard
+
+- name: Apply IngressRoute to Kubedash
+  k8s:
+    state: absent
+    definition:
+      apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: kubedash-ingress
+        namespace: kubernetes-dashboard
+      spec:
+        entryPoints:
+          - websecure
+        routes:
+          - match: Host("kubedash.{{ cluster_app_postfix }}")
+            kind: Rule
+            services:
+              - name: kubernetes-dashboard
+                port: 443

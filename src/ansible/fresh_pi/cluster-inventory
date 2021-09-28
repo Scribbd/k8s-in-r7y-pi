@@ -2,6 +2,7 @@
 192.168.178.150 # master
 192.168.178.160
 192.168.178.161
+192.168.178.162
 
 [cluster:vars]
 ansible_python_interpreter=/usr/bin/python3

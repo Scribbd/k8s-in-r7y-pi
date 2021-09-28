@@ -1,0 +1,49 @@
+---
+- hosts: localhost
+  collections: kubernetes.core
+
+  tasks:
+    # - name: UnPlay Longhorn
+    #   k8s:
+    #     state: absent
+    #     namespace: longhorn-system
+
+    - name: Unplay KuberDash
+      k8s:
+        state: absent
+        namespace: kubernetes-dashboard
+        src: ~/kubedash.yml
+
+    - name: Deploy admin user
+      k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: admin-user
+            namespace: kubernetes-dashboard
+
+    - name: Deploy admin user role
+      k8s:
+        state: absent
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: admin-user
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: cluster-admin
+          subjects:
+            - kind: ServiceAccount
+              name: admin-user
+              namespace: kubernetes-dashboard
+
+    - name: Get KubeDashboard bearer token
+      k8s:
+        state: absent
+        kind: secret
+        namespace: kubernetes-dashboard
+        name: admin-user-token

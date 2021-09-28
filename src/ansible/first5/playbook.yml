@@ -1,6 +1,7 @@
 ---
 # Playbook for the first 5 minutes of a Pi's life on the internet.
 - hosts: all
+  gather_facts: true
   become: true
 
   tasks:
@@ -9,6 +10,11 @@
         name: pi
         state: absent
         remove: true
+
+    - name: Set timezone to UTC
+      community.general.timezone:
+        hwclock: UTC
+        name: UTC
 
     - name: Setup hostname
       include_tasks: tasks/setup-hostname.yml

@@ -1,0 +1,47 @@
+# From here on out the playbook will be using localhost to use the local kubectl to manage the remote cluster
+- hosts: localhost
+
+  vars:
+    longhorn_version: v1.2.0
+    kubedash_version: v2.3.1
+    cluster_app_postfix: app.cluster.lan
+
+  tasks:
+    - name: Install kubedash
+      include_tasks: tasks/kubedash.yml
+
+    - name: Install longhorn
+      include_tasks: tasks/longhorn.yml
+
+    - name: Apply Ingressroute to pre-installed Traefik dash
+      k8s:
+        state: present
+        definition:
+          apiVersion: traefik.containo.us/v1alpha1
+          kind: IngressRoute
+          metadata:
+            name: traefik-ingress
+            namespace: kube-system
+          spec:
+            entryPoints:
+              - websecure
+            routes:
+              - match: Host("traefik-dash.{{ cluster_app_postfix }}") && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+                kind: Rule
+                services:
+                  - name: api@internal
+                    kind: TraefikService
+
+- hosts: master_nodes
+  become: true
+
+  tasks:
+    # Enable Dashboards
+    - name: Enable Traefic dashboard
+      tags: debug
+      template:
+        src: "templates/traefik-config.yaml.j2"
+        dest: /var/lib/rancher/k3s/server/manifests
+        owner: root
+        group: root
+        mode: 0644

@@ -1,5 +1,5 @@
 ---
-tags: [go]
+tags: [exploration, go]
 aliases: []
 ---
 

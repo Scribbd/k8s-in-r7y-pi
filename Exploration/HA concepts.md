@@ -1,5 +1,5 @@
 ---
-tags: [HA]
+tags: [exploration, HA]
 aliases: [HA, HA Concepts, Highly Available, Highly Available Concepts]
 ---
 # Highly Available K8s

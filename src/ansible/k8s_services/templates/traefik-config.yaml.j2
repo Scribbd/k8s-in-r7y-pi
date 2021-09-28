@@ -1,0 +1,11 @@
+apiVersion: heml.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    dashboard:
+      enabled: true
+    globalArguments:
+      - "--serversTransport.insecureSkipVerify=true"
